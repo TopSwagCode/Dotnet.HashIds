@@ -10,7 +10,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton(new ProductDatebase());
-builder.Services.AddSingleton<IHashids>(_ => new Hashids("My super secret salt!", 5));
+builder.Services.AddSingleton<IHashids>(_ => new Hashids("Our super secret salt!", 5));
 
 var app = builder.Build();
 

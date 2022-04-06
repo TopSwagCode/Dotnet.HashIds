@@ -46,10 +46,8 @@ public class ProductController : ControllerBase
 
         if (product == null)
             return NotFound();
-        
-        var (_,_,name) = product;
 
-        return Ok(new ProductResponse(id.ToString(), name));
+        return Ok(new ProductResponse(id.ToString(), product.Name));
     }
     
     [HttpGet("hashId/{hashId}")]
@@ -61,9 +59,8 @@ public class ProductController : ControllerBase
 
             if (product == null)
                 return NotFound();
-            var (_,_,name) = product;
-            
-            return Ok(new ProductResponse(hashId,name));
+
+            return Ok(new ProductResponse(hashId, product.Name));
         }
 
         return NotFound();
@@ -76,9 +73,7 @@ public class ProductController : ControllerBase
 
         if (product == null)
             return NotFound();
-        
-        var (_,_,name) = product;
 
-        return Ok(new ProductResponse(uid.ToString(), name));
+        return Ok(new ProductResponse(uid.ToString(), product.Name));
     }
 }

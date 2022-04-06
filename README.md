@@ -9,23 +9,61 @@ In short if a attacker gains access to url `example.com/1337` he would be able t
 
 ### __Example__ 
 
-This could be implement as a simple hello world console app. But it would make more sence to show it as a WebAPI project. So first of we need to add a singleton service to our IOC container in Startup.cs / Program.cs (Depending what version of Dotnet tempalte used). This will let us incject it to our ProductController.
+This could be implement as a simple hello world console app. But it would make more sense to show it as a WebAPI project.
+
+First we need to install the nuget package
+
+``` shell
+$ dotnet add package Hashids.net --version 1.5.0
+```
+
+Then we can add it to the IOC container
 
 ``` csharp
-builder.Services.AddSingleton<IHashids>(_ => new Hashids("My super secret salt!", 5));
+builder.Services.AddSingleton<IHashids>(_ => new Hashids("Our super secret salt!", 5));
 ```
 
 So we are creating our HashIds with a super secret salt (shh don't tell anyone) and setting the minimum length to be 5. In this project there is a simple in-memory database to store products that consists of a int Id, Guid Uid, string Name, that we can fetch from our API. The API endpoints using HashIds looks like the following:
 
 ``` csharp
-// Get all
 [HttpGet("hashId")]
 public IEnumerable<ProductResponse> GetHashId()
 {
     return _productDatabase.Products.Select(x => new ProductResponse(_hashids.Encode(x.Id), x.Name));
 }
+```
 
-// Get one
+Return json that would look like:
+
+``` json
+[
+  {
+    "id": "o56ky",
+    "name": "Product: 1"
+  },
+  {
+    "id": "4mXxm",
+    "name": "Product: 2"
+  },
+  {
+    "id": "4mkay",
+    "name": "Product: 3"
+  },
+  {
+    "id": "9mveB",
+    "name": "Product: 4"
+  },
+  {
+    "id": "VywDB",
+    "name": "Product: 5"
+  }
+]
+```
+
+And for getting single element:
+
+
+``` csharp
 [HttpGet("hashId/{hashId}")]
 public ActionResult<ProductResponse> GetByHashId(string hashId)
 {
@@ -35,12 +73,20 @@ public ActionResult<ProductResponse> GetByHashId(string hashId)
 
         if (product == null)
             return NotFound();
-        var (_,_,name) = product;
         
-        return Ok(new ProductResponse(hashId,name));
+        return Ok(new ProductResponse(hashId, product.Name));
     }
 
     return NotFound();
+}
+```
+
+Return json that would look like:
+
+``` json
+{
+  "id": "4mkay",
+  "name": "Product: 3"
 }
 ```
 
