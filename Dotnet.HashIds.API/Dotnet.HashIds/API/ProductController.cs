@@ -10,39 +10,39 @@ public class ProductController : ControllerBase
 {
     
     private readonly ILogger<ProductController> _logger;
-    private readonly ProductDatebase _productDatebase;
+    private readonly ProductDatebase _productDatabase;
     private readonly IHashids _hashids;
 
-    public ProductController(ILogger<ProductController> logger, ProductDatebase productDatebase, IHashids hashids)
+    public ProductController(ILogger<ProductController> logger, ProductDatebase productDatabase, IHashids hashids)
     {
         _logger = logger;
-        _productDatebase = productDatebase;
+        _productDatabase = productDatabase;
         _hashids = hashids;
     }
 
     [HttpGet("id")]
     public IEnumerable<ProductResponse> GetId()
     {
-        return _productDatebase.Products.Select(x => new ProductResponse(x.Id.ToString(), x.Name));
+        return _productDatabase.Products.Select(x => new ProductResponse(x.Id.ToString(), x.Name));
     }
     
     [HttpGet("hashId")]
     public IEnumerable<ProductResponse> GetHashId()
     {
-        return _productDatebase.Products.Select(x => new ProductResponse(_hashids.Encode(x.Id), x.Name));
+        return _productDatabase.Products.Select(x => new ProductResponse(_hashids.Encode(x.Id), x.Name));
     }
     
     [HttpGet("uid")]
     public IEnumerable<ProductResponse> GetUid()
     {
-        return _productDatebase.Products.Select(x => new ProductResponse(x.Uid.ToString(), x.Name));
+        return _productDatabase.Products.Select(x => new ProductResponse(x.Uid.ToString(), x.Name));
     }
     
     
     [HttpGet("id/{id}")]
     public ActionResult<ProductResponse> GetById(int id)
     {
-        var product = _productDatebase.Products.SingleOrDefault(x => x.Id == id);
+        var product = _productDatabase.Products.SingleOrDefault(x => x.Id == id);
 
         if (product == null)
             return NotFound();
@@ -57,7 +57,7 @@ public class ProductController : ControllerBase
     {
         if(_hashids.TryDecodeSingle(hashId, out int id))
         {
-            var product = _productDatebase.Products.SingleOrDefault(x => x.Id == id);
+            var product = _productDatabase.Products.SingleOrDefault(x => x.Id == id);
 
             if (product == null)
                 return NotFound();
@@ -72,7 +72,7 @@ public class ProductController : ControllerBase
     [HttpGet("uid/{uid}")]
     public ActionResult<ProductResponse> GetByHashUid(Guid uid)
     {
-        var product = _productDatebase.Products.SingleOrDefault(x => x.Uid == uid);
+        var product = _productDatabase.Products.SingleOrDefault(x => x.Uid == uid);
 
         if (product == null)
             return NotFound();
