@@ -38,6 +38,12 @@ public class ProductController : ControllerBase
         return _productDatabase.Products.Select(x => new ProductResponse(x.Uid.ToString(), x.Name));
     }
     
+    [HttpGet("productId")]
+    public IEnumerable<ProductStronglyTypedIdResponse> GetProductId()
+    {
+        return _productDatabase.Products.Select(x => new ProductStronglyTypedIdResponse(new ProductId(x.Id), x.Name));
+    }
+    
     
     [HttpGet("id/{id}")]
     public ActionResult<ProductResponse> GetById(int id)
@@ -75,5 +81,16 @@ public class ProductController : ControllerBase
             return NotFound();
 
         return Ok(new ProductResponse(uid.ToString(), product.Name));
+    }
+    
+    [HttpGet("productId/{productId}")]
+    public ActionResult<ProductResponse> GetByHashUid(ProductId productId)
+    {
+        var product = _productDatabase.Products.SingleOrDefault(x => x.Id == productId.Value);
+
+        if (product == null)
+            return NotFound();
+
+        return Ok(new ProductStronglyTypedIdResponse(productId, product.Name));
     }
 }
